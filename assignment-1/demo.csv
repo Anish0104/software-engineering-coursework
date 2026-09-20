@@ -1,0 +1,10 @@
+Name,Subject,Marks,Notes
+Anish,Machine Learning,95,Regular row
+"Shirodkar, Anish",Software Engineering,100,"Contains a comma"
+Sam,Math,,Missing marks
+Alex,Computing,88,"He said ""hello"""
+John,Writing,92,"First line
+Second line"
+Total,,=SUM(C2:C6),Formula shown as text
+Short,Only two cells
+Trailing,Comma,75,

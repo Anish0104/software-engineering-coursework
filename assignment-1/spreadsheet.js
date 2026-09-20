@@ -1,46 +1,145 @@
 const fs = require('fs');
+const readline = require('readline');
 
-const filename = process.argv[2];
-
-if (!filename) {
-    console.error('Usage: node spreadsheet.js <filename.csv>');
-    process.exit(1);
+function readFile(filename) {
+    return fs.readFileSync(filename, 'utf8');
 }
 
-try {
-    const content = fs.readFileSync(filename, 'utf8');
+function parseCSV(content) {
+    if (content === '') return [];
 
-const lines = content.trimEnd().split(/\r?\n/);
-const rows = [];
+    const rows = [];
+    let row = [];
+    let cell = '';
+    let insideQuotes = false;
+    let quoteClosed = false;
 
-for (const line of lines) {
-    rows.push(line.split(','));
+    for (let i = 0; i < content.length; i++) {
+        const character = content[i];
+
+        if (insideQuotes) {
+            if (character === '"') {
+                if (content[i + 1] === '"') {
+                    cell += '"';
+                    i++;
+                } else {
+                    insideQuotes = false;
+                    quoteClosed = true;
+                }
+            } else {
+                cell += character;
+            }
+            continue;
+        }
+
+        if (character === ',') {
+            row.push(cell);
+            cell = '';
+            quoteClosed = false;
+        } else if (character === '\n' || character === '\r') {
+            row.push(cell);
+            rows.push(row);
+            row = [];
+            cell = '';
+            quoteClosed = false;
+            // Windows CRLF counts as a single line ending.
+            if (character === '\r' && content[i + 1] === '\n') i++;
+        } else if (quoteClosed) {
+            throw new Error('Unexpected character after closing quote');
+        } else if (character === '"') {
+            if (cell.length > 0) {
+                throw new Error('Unexpected quote inside unquoted cell');
+            }
+            insideQuotes = true;
+        } else {
+            cell += character;
+        }
+    }
+
+    if (insideQuotes) throw new Error('Unclosed quoted cell');
+
+    // A final newline already completed its row.
+    if (row.length > 0 || cell.length > 0 || quoteClosed) {
+        row.push(cell);
+        rows.push(row);
+    }
+    return rows;
 }
 
-// Find the longest value in each column.
-const widths = [];
+function formatTable(rows, hasHeader = false) {
+    if (rows.length === 0) return '(empty spreadsheet)';
 
-for (const row of rows) {
-    for (let column = 0; column < row.length; column++) {
-        widths[column] = Math.max(
-            widths[column] || 0,
-            row[column].length
-        );
+    const displayRows = rows.map(row =>
+        row.map(cell => cell.replace(/\t/g, '    ').split(/\r\n|\n|\r/))
+    );
+    const widths = [];
+    for (const row of displayRows) {
+        for (let column = 0; column < row.length; column++) {
+            for (const line of row[column]) {
+                widths[column] = Math.max(widths[column] || 0, line.length);
+            }
+        }
+    }
+
+    const formattedRows = [];
+    const separator = '+' + widths
+        .map(width => '-'.repeat(width + 2)).join('+') + '+';
+
+    for (const [rowIndex, row] of displayRows.entries()) {
+        let height = 1;
+        for (const cellLines of row) {
+            height = Math.max(height, cellLines.length);
+        }
+
+        for (let lineIndex = 0; lineIndex < height; lineIndex++) {
+            const paddedCells = [];
+            for (let column = 0; column < widths.length; column++) {
+                const cellLines = row[column] || [];
+                const text = cellLines[lineIndex] ?? '';
+                paddedCells.push(text.padEnd(widths[column]));
+            }
+            formattedRows.push('| ' + paddedCells.join(' | ') + ' |');
+        }
+        if (hasHeader && rowIndex === 0) formattedRows.push(separator);
+    }
+    return formattedRows.join('\n');
+}
+
+function displayFile(filename) {
+    try {
+        const content = readFile(filename);
+        const rows = parseCSV(content);
+        console.log(formatTable(rows, true));
+    } catch (error) {
+        console.error('Unable to display file:', error.message);
     }
 }
 
-// Pad each cell and print the row.
-for (const row of rows) {
-    const paddedCells = [];
+function main() {
+    const filename = process.argv[2];
+    if (filename) displayFile(filename);
 
-    for (let column = 0; column < widths.length; column++) {
-        const cell = row[column] ?? '';
-        paddedCells.push(cell.padEnd(widths[column]));
-    }
+    const terminal = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+    terminal.setPrompt('Enter a CSV file path (or exit): ');
+    terminal.prompt();
 
-    console.log('| ' + paddedCells.join(' | ') + ' |');
+    terminal.on('line', (answer) => {
+        const filePath = answer.trim();
+        if (filePath.toLowerCase() === 'exit') {
+            terminal.close();
+            return;
+        }
+        if (filePath === '') {
+            console.log('Please enter a file path.');
+        } else {
+            displayFile(filePath);
+        }
+        terminal.prompt();
+    });
 }
-} catch (error) {
-    console.error('Unable to read file:', error.message);
-    process.exitCode = 1;
-}
+
+if (require.main === module) main();
+module.exports = { readFile, parseCSV, formatTable };
