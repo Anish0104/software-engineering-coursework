@@ -42,8 +42,9 @@ node records.js <input-file> [output-file] [registry-file]
 - Validation errors prevent output-file creation.
 - The program exits with status 0 on success and 1 on error.
 
-The supplied `sorted.txt` demonstrates the expected output. Use a
-different filename when running the program again.
+The supplied `sample-sorted.txt` shows the sorted output of `input.txt`.
+Running `node records.js input.txt` writes `sorted.txt`; delete that file
+before running the same command again.
 
 ## Input format
 
@@ -90,6 +91,7 @@ No property may appear more than once in a record.
   is interpreted as another property on the same line. Unrestricted
   text containing that pattern is ambiguous under this convention.
 - Missing-property errors identify the record's starting line.
+- Errors are listed in line order.
 - Malformed record markers are reported and skipped while parsing
   continues, which may produce additional structural errors.
 
@@ -124,7 +126,22 @@ The output uses this property order:
 5. COLOR, when present
 
 Property names are uppercase. Values retain their input capitalization.
-Records are separated by a blank line.
+Records are written one after another with no blank lines between them,
+matching the expected output in the assignment.
+
+## Assignment example
+
+`example.txt` contains the three-record example input from the assignment,
+and `example-expected.txt` contains the expected sorted output given in
+the assignment.
+
+```bash
+node records.js example.txt example-output.txt
+diff example-expected.txt example-output.txt
+```
+
+`diff` prints nothing, confirming the output matches exactly.
+(On Windows PowerShell, use `fc.exe example-expected.txt example-output.txt`.)
 
 ## Tests
 
@@ -176,7 +193,9 @@ These examples intentionally fail validation.
 | invalid-time.txt | Invalid date and time examples |
 | invalid-weight.txt | Invalid weight and unit examples |
 | known-identifiers.txt | Registry conflict demonstration |
-| sorted.txt | Sorted sample output |
+| sample-sorted.txt | Sorted output of input.txt |
+| example.txt | Example input from the assignment |
+| example-expected.txt | Expected output from the assignment |
 | results.txt | Captured terminal results |
 | spec/ | Jasmine tests and configuration |
 | package.json | Project configuration and test command |

@@ -62,7 +62,7 @@ describe("Command-line file processing", function () {
         }
 
         expect(fs.readFileSync(outputFile, "utf8")).toBe(
-            earlier + "\n\n" + later + "\n"
+            earlier + "\n" + later + "\n"
         );
     });
 

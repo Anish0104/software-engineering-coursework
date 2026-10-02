@@ -1,0 +1,20 @@
+BEGIN:RECORD
+identifier: A-001
+time: 20250927T101530
+weight: 72.4
+units: kilograms
+color: #2F54EB
+END:RECORD
+
+begin:record
+IDENTIFIER: a-003
+COLOR: rgb(255, 128, 0)
+TiMe: 20250927T093005
+END:RECORD
+BEGIN:RECORD
+Identifier: A-002
+Time: 20250927T100000
+Weight: 160
+Units: pounds
+Color: blue
+END:RECORD

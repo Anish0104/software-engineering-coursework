@@ -315,7 +315,7 @@ function formatRecords(records) {
 
     return blocks.length === 0
         ? ""
-        : blocks.join("\n\n") + "\n";
+        : blocks.join("\n") + "\n";
 }
 
 function main() {
@@ -371,6 +371,12 @@ function main() {
     );
 
     if (errors.length > 0) {
+        // List errors in file order (stable for errors on the same line).
+        errors.sort(function (a, b) {
+            return Number(a.match(/^Line (\d+)/)[1]) -
+                Number(b.match(/^Line (\d+)/)[1]);
+        });
+
         console.error(`Found ${errors.length} error(s):`);
 
         for (const error of errors) {
@@ -408,7 +414,8 @@ function main() {
     }
 
     console.log(
-        `Successfully validated and sorted ${records.length} records.`
+        `Successfully validated and sorted ${records.length} ` +
+        `record${records.length === 1 ? "" : "s"}.`
     );
     console.log(`Saved to: ${outputFile}`);
 }
