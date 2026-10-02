@@ -1,161 +1,306 @@
-# CSV Table Printer
+ASSIGNMENT 1: READING AND PRINTING A SPREADSHEET DOCUMENT
+Problem 2.1.5
+Name: Anish Shirodkar
+NetID: avs181
 
-**Software Engineering · Assignment 1 · Problem 2.1.5**  
-Anish Shirodkar · Rutgers University
 
-A Node.js command-line program that reads CSV files and displays them as aligned, plain-text tables. Supports file selection through command-line arguments and an interactive prompt.
+1. PURPOSE
+----------------------------------------------------------------------
 
-## Example output
+This Node.js program reads a CSV file and displays its contents as an aligned plain-text table in the terminal.
 
-```text
-| Name  | Subject              | Marks |
-+-------+----------------------+-------+
-| Anish | Machine Learning     | 95    |
-| Sam   | Math                 | 8     |
-| Alex  | Software Engineering | 100   |
-```
+Users can select a file through a command-line argument or an interactive prompt. Formulas are displayed as text and are not evaluated.
 
-Column widths adjust to the input. Shorter values are padded with spaces so the separators stay aligned.
 
-## Getting started
+2. SETUP
+----------------------------------------------------------------------
 
-Developed and tested locally with **Node.js v20.20.2** and **npm v10.8.2**.
+Tested environment:
 
-From the repository root:
+    Node.js     v20.20.2
+    npm         10.8.2
 
-```bash
-cd assignment-1
-npm ci
-```
+Open a terminal inside the assignment-1 directory and install the testing dependencies:
 
-Display an example file:
+    npm ci
 
-```bash
-node spreadsheet.js demo.csv
-```
+The program uses built-in Node.js modules. Jasmine is required only for automated testing.
 
-Or start with an interactive prompt:
 
-```bash
-node spreadsheet.js
-```
+3. RUNNING THE PROGRAM
+----------------------------------------------------------------------
 
-At the prompt, enter a relative or absolute file path:
+Display the basic sample:
 
-```text
-Enter a CSV file path (or exit): sample.csv
-```
+    node spreadsheet.js sample.csv
 
-Enter `exit` to close the program. If a file cannot be read or contains malformed quoting, the program displays an error and lets you try another file.
+Display the CSV edge-case demonstration:
 
-For command-line paths containing spaces, use quotation marks:
+    node spreadsheet.js demo.csv
 
-```bash
-node spreadsheet.js "sample file.csv"
-```
+Display the complete tips dataset:
 
-At the interactive prompt, enter paths **without surrounding quotation marks**. Shell commands such as `npx jasmine` should be run after exiting the program.
+    node spreadsheet.js tips.csv
 
-## Supported cases
+Display the first 10 data rows of the tips dataset:
 
-- Quoted cells containing commas.
-- Escaped quotation marks, such as `"He said ""hello"""`.
-- Line breaks inside quoted cells.
-- Empty cells and trailing commas.
-- Rows with different numbers of cells.
-- Preserved spaces and tabs displayed as four spaces.
-- Windows and Unix line endings.
-- Long text and numerical strings.
-- Spreadsheet formulas displayed as plain text.
+    node spreadsheet.js tips-preview.csv
 
-Missing cells in uneven rows appear blank. Multiline cells use continuation lines, keeping neighboring columns aligned.
+Start directly at the interactive prompt:
 
-The console display places a separator below the first row, treating it as a header. All rows are retained, including when a file has no header.
+    node spreadsheet.js
 
-## How it works
 
-| Function | Responsibility |
-| --- | --- |
-| `readFile(filename)` | Reads UTF-8 text using Node’s built-in `fs` module. |
-| `parseCSV(content)` | Identifies cells and rows while tracking quotation marks. |
-| `formatTable(rows, hasHeader)` | Calculates column widths and builds the table string. |
-| `displayFile(filename)` | Reads, parses, and prints a file, handling errors. |
-| `main()` | Processes the command-line argument and starts the interactive prompt. |
+INTERACTIVE INPUT
 
-### Parsing
+    Enter a CSV file path (or exit): sample.csv
 
-Splitting every line at commas would incorrectly separate a value such as `"Shirodkar, Anish"`.
+Enter a relative or absolute file path. Relative paths are resolved from the directory where the program was started.
 
-The parser instead scans one character at a time. Inside a quoted cell, commas and line breaks are treated as content. Two consecutive quotation marks represent one literal quotation mark.
+Enter exit to close the program:
 
-Malformed quoting produces an error rather than silently returning incorrect cells.
+    Enter a CSV file path (or exit): exit
 
-### Formatting
+Return to the shell before entering commands such as npx jasmine.
 
-The formatter measures the longest display line in each column and uses `padEnd()` to add spaces to shorter values. For multiline cells, it prints enough display lines for the tallest cell in the row.
 
-The parser and formatter return values rather than printing directly. This makes their results easier to test independently.
+PATHS CONTAINING SPACES
 
-## Tests
+Use quotation marks when supplying a path on the command line:
 
-Run the Jasmine suite:
+    node spreadsheet.js "sample file.csv"
 
-```bash
-npx jasmine
-```
+At the interactive prompt, enter the path without surrounding quotes.
 
-Latest local result:
 
-```text
-29 specs, 0 failures
-```
+4. SUPPORTED FEATURES
+----------------------------------------------------------------------
 
-| Test file | Specifications | Coverage |
-| --- | ---: | --- |
-| `spec/spreadsheet.spec.js` | 20 | CSV parsing, malformed quotes, alignment, multiline cells, tabs, and the header separator |
-| `spec/fileIO.spec.js` | 6 | File reading, paths containing spaces, command-line input, interactive input, and error recovery |
-| `spec/largeTable.spec.js` | 3 | 1,000 data rows, 200-character text, and long numerical strings |
+    CSV parsing
+    -----------
+    - Empty cells and trailing empty cells
+    - Spaces within values
+    - Rows with different numbers of cells
+    - Commas inside quoted cells
+    - Escaped quotation marks
+    - Newlines inside quoted cells
+    - LF, CRLF, and CR record endings
 
-File interaction tests create temporary files and remove them afterward. They run the actual program in a separate process to check its input and output.
+    Table formatting
+    ----------------
+    - Automatically calculated column widths
+    - Aligned columns with padded values
+    - Horizontal separator below the header
+    - Multiline cells displayed across aligned terminal lines
+    - Missing cells displayed as empty cells
+    - Each tab replaced with four spaces
+    - Long numbers and formulas preserved as text
 
-## Example datasets
+    File handling and interaction
+    -----------------------------
+    - UTF-8 file reading
+    - Command-line and interactive file selection
+    - Multiple files viewed during one session
+    - Error messages for missing files and malformed CSV input
+    - Continued interaction after an error
+    - Empty-file message: "(empty spreadsheet)"
 
-| File | Purpose |
-| --- | --- |
-| `sample.csv` | Small example for basic reading and alignment. |
-| `demo.csv` | Constructed example showing unusual cells and formula text. |
-| `tips.csv` | Full restaurant tips dataset downloaded from Seaborn’s data repository. |
-| `tips-preview.csv` | Header and first 10 records of `tips.csv`, used for a compact screenshot. |
 
-**Dataset source:** [Seaborn data repository — tips.csv](https://github.com/mwaskom/seaborn-data/blob/master/tips.csv)
+5. PROGRAM DESIGN
+----------------------------------------------------------------------
 
-The preview is a separate file. Creating or displaying it does not modify the original dataset.
+    readFile(filename)
 
-## Screenshots
+        Reads the requested file as UTF-8 text using fs.readFileSync.
+        Passes file-reading errors to the caller.
 
-### Internet dataset and test results
 
-First 10 records of the tips dataset, with the Jasmine test summary.
+    parseCSV(content)
 
-![Tips dataset preview and 29 passing tests](tips-result.png)
+        Scans the input one character at a time and produces an array
+        of rows. Each row contains an array of string values.
 
-### Unusual spreadsheet cells
+        Tracks quoted cells so that commas and newlines inside
+        quotation marks remain part of the cell value.
 
-Demonstrates quoted text, empty cells, multiline content, uneven rows, and a formula displayed without evaluation.
+        Rejects:
+        - Unclosed quoted cells
+        - Quotes inside unquoted cells
+        - Unexpected text after a closing quote
 
-![CSV edge-case demonstration](demo-result.png)
 
-## Limitations
+    formatTable(rows, hasHeader = false)
 
-- The entire file and formatted output are held in memory.
-- Tables wider than the terminal may wrap; tall tables require scrolling.
-- Padding uses JavaScript string lengths, so emoji and some Unicode characters may not align correctly.
-- Input is expected to be comma-separated UTF-8 text. A UTF-8 byte-order mark is not specially removed.
-- File extensions are not validated.
-- Formulas remain text. Cell editing and formula evaluation are outside this assignment’s scope.
+        Calculates column widths and pads values to align the table.
 
-## Submission notes
+        Supports multiline cells and fills missing cells in shorter
+        rows with empty values.
 
-`README.txt` contains the plain-text explanation for the homework submission. The submission ZIP includes the source code, tests, configuration, example datasets, and screenshots.
+        Adds a separator after the first row when hasHeader is true.
 
-Dependencies in `node_modules` are excluded and can be installed using `npm ci`.
+
+    displayFile(filename)
+
+        Reads, parses, and displays a file with the header separator.
+        Reports errors without ending the interactive session.
+
+
+    main()
+
+        Displays the optional command-line file and starts the
+        interactive prompt using Node.js readline.
+
+
+The program starts only when spreadsheet.js is executed directly. Importing it in a test does not start the interactive prompt.
+
+Exported functions:
+
+    readFile
+    parseCSV
+    formatTable
+
+
+6. AUTOMATED TESTING
+----------------------------------------------------------------------
+
+Run from the assignment-1 directory:
+
+    npx jasmine
+
+Latest recorded result:
+
+                        29 specs, 0 failures
+
+
+    TEST FILE                         NUMBER OF TESTS
+    ------------------------------------------------
+    spec/spreadsheet.spec.js                 20
+    spec/fileIO.spec.js                       6
+    spec/largeTable.spec.js                   3
+    ------------------------------------------------
+    TOTAL                                   29
+
+
+    Parsing and formatting tests
+
+        Cover CSV values, quoted fields, malformed input, alignment, multiline cells, tabs, empty input, and the header separator.
+
+
+    File and interaction tests
+
+        Cover file reading, paths containing spaces, missing files, command-line input, interactive input, and error recovery. Temporary test files are removed after the tests finish.
+
+
+    Large-table tests
+
+        Cover 1,000 data rows, long text, and long numeric strings.
+
+
+Jasmine randomizes the test order. Its printed seed can be used to reproduce a particular ordering.
+
+
+7. DATA FILES
+----------------------------------------------------------------------
+
+    sample.csv
+
+        A small example containing names, subjects, and marks.
+
+
+    demo.csv
+
+        A manually created dataset demonstrating quoted commas, escaped quotes, missing values, multiline values, formulas, uneven rows, and a trailing empty cell.
+
+
+    tips.csv
+
+        An external dataset containing restaurant bill and tip information, obtained from the seaborn-data repository.
+
+        Source:
+        https://github.com/mwaskom/seaborn-data/blob/master/tips.csv
+
+
+    tips-preview.csv
+
+        Contains the header and first 10 data rows from tips.csv.
+
+        Created with:
+
+            head -n 11 tips.csv > tips-preview.csv
+
+        The original tips.csv remains unchanged.
+
+        This line-based preview works for this dataset. Files with  multiline quoted fields require parsing to select complete rows correctly.
+
+
+8. SCREENSHOTS
+----------------------------------------------------------------------
+
+    tips-result.png
+
+        Shows the formatted tips preview and a successful Jasmine test run with 29 specs and 0 failures.
+
+
+    demo-result.png
+
+        Shows the formatted output for the CSV edge-case examples.
+
+
+9. LIMITATIONS
+----------------------------------------------------------------------
+
+    - Supports CSV text, not Excel workbook formats such as XLSX.
+
+    - Displays formulas literally without calculating them.
+
+    - Loads the complete file into memory.
+
+    - Wide tables may wrap in a narrow terminal window.
+
+    - Uses JavaScript string length to calculate column widths.
+      Emoji and full-width Unicode characters may not align precisely.
+
+    - Does not explicitly remove a UTF-8 byte-order mark.
+
+    - Interprets input as CSV without validating the file extension.
+
+    - Treats the first row as a header when displaying a file.
+
+    - Trims paths entered at the prompt, so leading or trailing
+      spaces in filenames are not preserved.
+
+
+10. PROJECT FILES
+----------------------------------------------------------------------
+
+    spreadsheet.js          Program implementation
+    package.json            Project metadata and dependencies
+    package-lock.json       Locked dependency versions
+    spec/                   Tests and Jasmine configuration
+
+    sample.csv              Basic sample
+    demo.csv                CSV edge-case examples
+    tips.csv                External dataset
+    tips-preview.csv        Short dataset preview
+
+    tips-result.png         Dataset output and test screenshot
+    demo-result.png         Edge-case output screenshot
+
+    README.txt              Plain-text documentation
+    README.md               GitHub-formatted documentation
+
+
+11. DEPENDENCIES AND SUBMISSION
+----------------------------------------------------------------------
+
+The node_modules directory is excluded from version control and the submission archive.
+
+Restore testing dependencies with:
+
+    npm ci
+
+Run the automated tests with:
+
+    npx jasmine
+
+======================================================================
