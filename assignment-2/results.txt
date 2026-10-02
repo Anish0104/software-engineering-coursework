@@ -1,0 +1,114 @@
+ASSIGNMENT 2 - PROGRAM RESULTS
+
+v20.20.2
+
+JASMINE TEST RESULTS
+
+> assignment-2@1.0.0 test
+> jasmine
+
+Randomized with seed 29596
+Started
+...............................................
+
+
+47 specs, 0 failures
+Finished in 0.202 seconds
+Randomized with seed 29596 (jasmine --random=true --seed=29596)
+
+SORTED OUTPUT
+BEGIN:RECORD
+IDENTIFIER: A-005
+TIME: 20240229T120000
+COLOR: green
+END:RECORD
+
+BEGIN:RECORD
+IDENTIFIER: A-007
+TIME: 20241231T235959
+WEIGHT: 0.5
+UNITS: kilograms
+COLOR: #FF0000
+END:RECORD
+
+BEGIN:RECORD
+IDENTIFIER: A-009
+TIME: 20250101T000000
+COLOR: black
+END:RECORD
+
+BEGIN:RECORD
+IDENTIFIER: A-006
+TIME: 20250927T080000
+WEIGHT: 0
+UNITS: KILOGRAMS
+END:RECORD
+
+BEGIN:RECORD
+IDENTIFIER: a-003
+TIME: 20250927T093005
+COLOR: rgb(255, 128, 0)
+END:RECORD
+
+BEGIN:RECORD
+IDENTIFIER: A-002
+TIME: 20250927T100000
+WEIGHT: 160
+UNITS: pounds
+COLOR: blue
+END:RECORD
+
+BEGIN:RECORD
+IDENTIFIER: A-008
+TIME: 20250927T100000
+WEIGHT: 125.75
+UNITS: Pounds
+COLOR: rgb(0, 0, 255)
+END:RECORD
+
+BEGIN:RECORD
+IDENTIFIER: A-001
+TIME: 20250927T101530
+WEIGHT: 72.4
+UNITS: kilograms
+COLOR: #2F54EB
+END:RECORD
+
+BEGIN:RECORD
+IDENTIFIER: A-010
+TIME: 20251001T183045
+WEIGHT: 85
+UNITS: kilograms
+COLOR: white
+END:RECORD
+
+BEGIN:RECORD
+IDENTIFIER: A-004
+TIME: 20260101T000000
+END:RECORD
+
+STRUCTURE ERRORS
+Found 4 error(s):
+Line 5: Duplicate property COLOR.
+Line 6: Unknown property "SIZE".
+Line 1: Missing required property IDENTIFIER.
+Line 1: Missing UNITS for a record with WEIGHT.
+No output file was written.
+
+INVALID DATES
+Found 2 error(s):
+Line 3: Invalid TIME "20250230T101530"; expected a real date and time in YYYYMMDDTHHMMSS format.
+Line 8: Invalid TIME "20250927T250000"; expected a real date and time in YYYYMMDDTHHMMSS format.
+No output file was written.
+
+INVALID WEIGHTS AND UNITS
+Found 3 error(s):
+Line 4: Invalid WEIGHT "-5"; expected a finite, nonnegative decimal number.
+Line 5: Invalid UNITS "grams"; expected "kilograms" or "pounds".
+Line 11: Invalid WEIGHT "heavy"; expected a finite, nonnegative decimal number.
+No output file was written.
+
+CROSS-FILE IDENTIFIER CHECK
+Found 1 error(s):
+Line 2: IDENTIFIER "A-001" already exists in the supplied identifier registry.
+No output file was written.
